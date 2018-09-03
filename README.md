@@ -66,3 +66,9 @@ Each item in the buttons section will be rendered as an on-screen button
 |Name|string|n/a|None|(Required) Button label|
 |service|string|(Any Home Assistant Service)|n/a|(Required) Service to call in the service domain specified previously.  Typically `turn_on` or `turn_off`|
 |serviceData|object|n/a|None|(Optional) Any values specified will be included in the service call (such as fan speed, brightness, etc)
+
+## TODO
+* Test and add examples for other service types (such as fan control)
+* Improved theme support
+* Ability to adjust styling from YAML
+* Code optimizations
