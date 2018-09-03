@@ -53,7 +53,7 @@ In this example, we want to show buttons for Full, Medium, Low, and Off light br
 |type|string|custom:multi-button-switch|None|(Required) Card type|
 |title|string|n/a|None|(Required) Card title to display|
 |entity|string|n/a|None|(Optional) entity_id for this card|
-|baseid|string|n/a|None|(Optional) Text to serve as the based for the HTML id of the component|
+|baseid|string|n/a|`multibutton-[random number]-`|(Optional) Text to serve as the based for the HTML id of the component|
 |serviceDomain|string|(Any Home Assistant Service Domain)|None|(Required) Service domain to call (e.g. light, scene, fan, etc)|
 |brightnessTolerance|number|n/a|0|(Optional) Delta from the target brightness to be considered a match.  I have some ZWave lights that don't report their final brightness for some time.  This allows the current state to be highlighted if the value is close, but not exactly what you've specified|
 |buttons|object|n/a|None|(Required) See below for the structure of each option|
