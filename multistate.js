@@ -1,184 +1,180 @@
 class MultiButtonSwitch extends HTMLElement {
-     constructor() {
-          super();
-          this.attachShadow({
-               mode: 'open'
-          });
-     }
+    constructor() {
+        super();
+        this.attachShadow({
+            mode: 'open'
+        });
+    }
 
-     set hass(hass) {
-          this._hass = hass;
+    set hass(hass) {
+        this._hass = hass;
 
-          this.setActiveButton(hass)
-     }
+        this.setActiveButton(hass)
+    }
 
-     setActiveButton(hass) {
+    // Highlights the button which matches the current entity state
+    setActiveButton(hass) {
+        if (this.config.entity) {
+            const entityId = this.config.entity;
+            const state = hass.states[entityId];
+            const currentBrightness = state.attributes.brightness;
 
-          const entityId = this.config.entity;
-          const state = hass.states[entityId];
-          const currentBrightness = state.attributes.brightness;
+            // Loop through all specified buttons
+            var i;
+            for (i = 0; i < this.config.buttons.length; i++) {
+                
+                // Find the button HTML that should have been created
+                var id = this.config.baseid + i;
+                var elementSearchResults = this.shadowRoot.querySelectorAll("#" + id);
+                var evaluateElement = elementSearchResults[0]
 
-          var i;
-          for (i = 0; i < this.config.options.length; i++) {
-               //console.log("i: " + i);
-               var id = this.config.baseid + i;
-               var elementSearchResults = this.shadowRoot.querySelectorAll("#" + id);
-               var evaluateElement = elementSearchResults[0]
-               //console.log(evaluateElement);
+                // Default to consider the button a match to current state,
+                // unless we determine otherwise
+                var isMatch = true;
 
-               var isMatch = true;
-
-               var actionType = "";
-               if (typeof this.config.options[i].service != 'undefined') {
-                    actionType = this.config.options[i].service;
+                // Check if this is a turn_on, turn_off, or other service type
+                var actionType = "";
+                if (typeof this.config.buttons[i].service != 'undefined') {
+                    actionType = this.config.buttons[i].service;
                     //console.log("Action Type: " + actionType);
                     actionType = actionType.replace("turn_", "");
-               }
+                }
 
+                // If we found the HTML for the button
+                if (evaluateElement) {
+                    // TODO: Refactor this block. It's way to messy
 
-               if (evaluateElement) {
+                    // Remove any active state classes, and reset to inactive
                     evaluateElement.classList.add("multistate-button-inactive");
-                         evaluateElement.classList.remove("multistate-button-active");
+                    evaluateElement.classList.remove("multistate-button-active");
 
+                    // Check the state (on/off) against the action type
                     if (state.state != actionType) {
+                        isMatch = false;
+                    // If the button turns it off and the device is off, consider it a match
+                    } else if (state.state == "off" && actionType == "off") {
+                        isMatch = true;
+                    } else {
+                        // Compare the service data with the entity date
+                        if (this.config.buttons[i].serviceData) {
+                            
+                            var y;
+                            // Check each service data to make sure it matches
+                            for (var property in this.config.buttons[i].serviceData[0]) {
+                                if (property != "entity_id" && this.config.buttons[i].serviceData[0].hasOwnProperty(property)) {
+                                    //     console.log(property);
+                                    //     console.log(this.config.buttons[i].serviceData[0][property])
+                                    var propertyValue = this.config.buttons[i].serviceData[0][property];
+                                    //    console.log(state.attributes);
+                                    if (state.attributes[property]) {
+                                        //console.log("CURRENT [" + property + "] : " + state.attributes[property]);
+                                        //console.log("ELEMENT [" + property + "] : " + propertyValue);
 
-                         isMatch = false;
-                    } 
-                    else if(state.state == "off" && actionType == "off")
-                    {
-                         isMatch = true;
-                    }
-                    else {
-                         //console.log("Element Found");
-                         // Set the inactive status and remove any active states.
-                         
-
-                         // Compare the service data with the entity date
-                         if (this.config.options[i].serviceData) {
-                              //console.log("Found Service Data");
-                              var y;
-                              //console.log(this.config.options[i].serviceData[0]);
-                              for (var property in this.config.options[i].serviceData[0]) {
-                                   if (property != "entity_id" && this.config.options[i].serviceData[0].hasOwnProperty(property)) {
-                                        //     console.log(property);
-                                        //     console.log(this.config.options[i].serviceData[0][property])
-                                        var propertyValue = this.config.options[i].serviceData[0][property];
-                                        //    console.log(state.attributes);
-                                        if (state.attributes[property]) {
-                                                 console.log("CURRENT [" + property + "] : " + state.attributes[property]);
-                                                 console.log("ELEMENT [" + property + "] : " + propertyValue);
-                                             if(property == "brightness")
-                                             {
-                                                  console.log("LOW: " +(propertyValue - this.config.brightnessTolerance) )
-                                                  console.log("HIGH: " +(propertyValue + this.config.brightnessTolerance) )
-                                                  if(state.attributes[property] >= (propertyValue - this.config.brightnessTolerance) && state.attributes[property] <= (propertyValue + this.config.brightnessTolerance))
-                                                  {
-                                                       console.log("IN RANGE")
-                                                       console.log("isMatch - Inner 1: " + isMatch);
-                                                  }
-                                                  else
-                                                  {
-                                                       console.log("OUT OF RANGE")
-                                                       isMatch = false;
-                                                  }
-                                             }
-                                             else if (state.attributes[property] != propertyValue) {
-                                                  isMatch = false;
-                                             }
-                                        } else {
-                                             isMatch = false;
-                                             //console.log("Cound not find state attribute");
+                                        // If we're checking brightness compare a range based on the tolerance
+                                        if (property == "brightness") {
+                                            //console.log("LOW: " + (propertyValue - this.config.brightnessTolerance))
+                                            //console.log("HIGH: " + (propertyValue + this.config.brightnessTolerance)
+                                            
+                                            if (state.attributes[property] >= (propertyValue - this.config.brightnessTolerance) && state.attributes[property] <= (propertyValue + this.config.brightnessTolerance)) {
+                                                //console.log("IN RANGE")
+                                                //console.log("isMatch - Inner 1: " + isMatch);
+                                            } else {
+                                                //console.log("OUT OF RANGE")
+                                                isMatch = false;
+                                            }
+                                        // Otherwise just check if the property state matches
+                                        } else if (state.attributes[property] != propertyValue) {
+                                            isMatch = false;
                                         }
-                                   }
-                              }
-                         }
-
-
-
+                                    } else {
+                                        isMatch = false;
+                                    }
+                                }
+                            }
+                        }
                     }
                     console.log("isMatch: " + isMatch);
                     if (isMatch) {
-                         evaluateElement.classList.remove("multistate-button-inactive");
-                         evaluateElement.classList.add("multistate-button-active");
+                        evaluateElement.classList.remove("multistate-button-inactive");
+                        evaluateElement.classList.add("multistate-button-active");
                     }
 
-               }
+                }
+            }
+        }
+    }
+
+    // Handles the button press event
+    onButtonClick(event) {
+
+        // Get the button that was clicked
+        var target = event.target || event.srcElement;
+        
+        // Get the button index which corresponds to the option data
+        var selectedIndex = target.attributes.selectedIndex.value;
+
+        // Get the option data for that index
+        var optionData = this.getOptionData(selectedIndex);
+
+        // Build the extra data to go with the service call
+        var serviceData = {};
+        if (optionData.serviceData != null) {
+            serviceData = optionData.serviceData[0];
+        }
+
+        // Add the entity_id to the service call if specified
+        if(this.config.entity)
+        {
+            serviceData.entity_id = this.config.entity;
+        }
+
+        // Call the specified service
+        this._hass.callService(this.config.serviceDomain, optionData.service, serviceData);
+
+        // Highlight the pressed button to provide visual feedback
+        target.classList.remove("multistate-button-inactive");
+        target.classList.add("multistate-button-active");
+    }
+
+    // Get the option data (specified in the YAML) for the specified index
+    getOptionData(selectedIndex) {
+        return this.config.buttons[selectedIndex];
+    }
 
 
+    setConfig(config) {
+        // Check for required parameters
+        if (!config.serviceDomain) {
+            throw new Error('"serviceDomain" not set');
+        }
 
+        if (config.serviceDomain != "SCENE" && !config.entity) {
+            throw new Error('"entity" Not Set');
+        }
 
+        this.config = config;
 
-          }
-     }
+        // Set default values
+        if (this.config.brightnessTolerance == null) {
+            this.config.brightnessTolerance = 0;
+        }
 
-     onButtonClick(event) {
-          //console.log(event);
-          //console.log("Selected Index: " + event.path[0].attributes.selectedIndex.value);
-          var target = event.target || event.srcElement;
-          var selectedIndex = target.attributes.selectedIndex.value;
-          var optionData = this.getOptionData(selectedIndex);
-          var serviceData = {};
-          if (optionData.serviceData != null) {
-               serviceData = optionData.serviceData[0];
-          } else {
+        // Render the card
+        const root = this.shadowRoot;
+        if (root.lastChild) {
+            root.removeChild(root.lastChild);
+        }
 
-          }
-
-          // console.log(optionData);
-          // console.log(serviceData);
-          // console.log("entity: " + this.config.entity);
-          serviceData.entity_id = this.config.entity;
-          // console.log("DOMAIN: " + this.config.serviceDomain);
-          // console.log("SERVICE: " + optionData.service);
-          // console.log(optionData);
-
-          this._hass.callService(this.config.serviceDomain, optionData.service, serviceData);
-
-          target.classList.remove("multistate-button-inactive");
-          target.classList.add("multistate-button-active");
-     }
-
-     getOptionData(selectedIndex) {
-          return this.config.options[selectedIndex];
-     }
-
-
-
-     setConfig(config) {
-          //console.log("Set Config called");
-
-          if (!config.serviceDomain) {
-               throw new Error('"serviceDomain" not set');
-          }
-
-          //config.serviceDomain = config.serviceDomain.toUpperCase();
-
-          if (config.serviceDomain != "SCENE" && !config.entity) {
-               throw new Error('"entity" Not Set');
-          }
-
-          this.config = config;
-
-          if (this.config.valueTolerance == null) {
-               this.config.valueTolerance = 0;
-          }
-
-
-          const root = this.shadowRoot;
-          if (root.lastChild) {
-               root.removeChild(root.lastChild);
-          }
-
-          const card = document.createElement('ha-card');
-          card.header = this.config.title;
-          const shadow = card.attachShadow({
-               mode: 'open'
-          });
-          var content = document.createElement('div');
-          content.id = "multistate-card-content";
-          content.setAttribute("class", "multistate-card-content");
-          const style = document.createElement('style');
-          style.textContent = `
+        const card = document.createElement('ha-card');
+        card.header = this.config.title;
+        const shadow = card.attachShadow({
+            mode: 'open'
+        });
+        var content = document.createElement('div');
+        content.id = "multistate-card-content";
+        content.setAttribute("class", "multistate-card-content");
+        const style = document.createElement('style');
+        style.textContent = `
           .multistate-button
           {
                border: solid 1px #7a7a7a;
@@ -211,85 +207,51 @@ class MultiButtonSwitch extends HTMLElement {
           }
           `;
 
-          var outputHTML = "";
+        var outputHTML = "";
 
-          this.i = 0;
-          // Create each button
-          this.config.options.forEach(o => {
-               const newButton = document.createElement('div');
+        this.i = 0;
+        // Create each button
+        this.config.buttons.forEach(o => {
+            const newButton = document.createElement('div');
 
-               var tempButton = "";
-               var id = "";
+            var tempButton = "";
+            var id = "";
 
-               id = this.config.baseid + this.i;
+            id = this.config.baseid + this.i;
 
-               // Build the button 
-               newButton.id = id;
-               newButton.setAttribute("name", id);
-               //newButton.setAttribute("serviceData",JSON.stringify(o));
-               newButton.setAttribute("selectedIndex", this.i);
-
-
-               newButton.setAttribute("class", "multistate-button");
-               newButton.innerHTML = o.Name;
+            // Build the button 
+            newButton.id = id;
+            newButton.setAttribute("name", id);
+            newButton.setAttribute("selectedIndex", this.i);
+            newButton.setAttribute("class", "multistate-button");
+            newButton.innerHTML = o.Name;
 
 
-               // Attach the button to the DOM
+            // Attach the button to the DOM
+            content.appendChild(newButton);
 
-               content.appendChild(newButton);
+            // Create an event listener for the button
+            newButton.addEventListener('click', event => {
+                this.onButtonClick(event)
+            });
 
-               //console.log("i: " + this.i);
+            this.i = this.i + 1;
 
-               newButton.addEventListener('click', event => {
-                    this.onButtonClick(event)
-               });
+        });
 
-               this.i = this.i + 1;
-
-          });
-
-          //content.innerHTML = outputHTML;
-
-          //card.appendChild(content);
-          card.appendChild(content);
-          card.appendChild(style);
-          //    card.addEventListener('click', event => {
-          //      console.log(event) });
-          root.appendChild(card);
-
-          var i = 0;
-          //    this.config.options.forEach(o => {
-          //         i++;
-          //      var id = this.config.baseid + i;
-          //      $("#"+id).click(function() {this.setBrightness(o.Brightness);})
-          //      $("#"+id).innerHTML="Test";
-          //      //console.log(id);
-          //    });
-
-     }
+        card.appendChild(content);
+        card.appendChild(style);
+        root.appendChild(card);
+    }
 
 
 
-     // The height of your card. Home Assistant uses this to automatically
-     // distribute all cards over the available columns.
-     getCardSize() {
-          return 6;
-     }
-}
-
-function loadCSS(url) {
-     const link = document.createElement('link');
-     link.type = 'text/css';
-     link.rel = 'stylesheet';
-     link.href = url;
-     document.head.appendChild(link);
-}
-
-function loadJavascript(url) {
-     const script = document.createElement('script');
-     script.type = 'text/javascript';
-     script.src = url;
-     document.head.appendChild(script);
+    // The height of your card. Home Assistant uses this to automatically
+    // distribute all cards over the available columns.
+    getCardSize() {
+        // TODO: Make dynamic
+        return 6;
+    }
 }
 
 customElements.define('multi-button-switch', MultiButtonSwitch);
