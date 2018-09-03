@@ -6,12 +6,12 @@ Each button will call a home assistant service with the specified data.  If the 
 ![multiswitch Example](https://github.com/grizzlyjere/multiswitch/blob/master/Example-Lights.png)
 
 ## Instructions
-1. In the `config/www` directory of Home Assistant, create a directory called `multistate`
-2. Save [multistate.js](https://github.com/grizzlyjere/multiswitch/raw/master/multistate.js) in this new directory
+1. In the `config/www` directory of Home Assistant, create a directory called `multibutton`
+2. Save [multibutton.js](https://github.com/grizzlyjere/multiswitch/raw/master/multibutton.js) in this new directory
 3. In your `ui-lovelace.yaml` file, add this file to the resources section.  It should look like this:
 ```
 resources:
-  - url: /local/multistate/multistate.js
+  - url: /local/multibutton/multibutton.js
     type: js
 ```
 4. Add the card to a view.  The card type will be `custom:multi-button-switch`.  See the examples section below for sample configurations
@@ -19,7 +19,7 @@ resources:
 ## Examples
 
 ### Light Dim States
-![multiswitch Example](https://github.com/grizzlyjere/multiswitch/blob/master/Example-Lights.png)
+![multibutton Example](https://github.com/grizzlyjere/multiswitch/blob/master/Example-Lights.png)
 
 In this example, we want to show buttons for Full, Medium, Low, and Off light brightness states
 
