@@ -1,4 +1,4 @@
-# multiswitch
+# multibutton
 A custom Home Assistant Lovelace control for displaying multiple buttons in a card (such as various light brightness, fan speeds, or scenes).
 
 Each button will call a home assistant service with the specified data.  If the entity matches the state of the button, it will be highlighted.  It's intended to be very flexible, so configuration is rather advanced.
@@ -68,6 +68,7 @@ Each item in the buttons section will be rendered as an on-screen button
 |serviceData|object|n/a|None|(Optional) Any values specified will be included in the service call (such as fan speed, brightness, etc)
 
 ## TODO
+* Generate html ID programatically
 * Test and add examples for other service types (such as fan control)
 * Improved theme support
 * Ability to adjust styling from YAML
