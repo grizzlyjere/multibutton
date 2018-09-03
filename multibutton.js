@@ -161,7 +161,7 @@ class MultiButtonSwitch extends HTMLElement {
 
         if(this.config.baseid == null)
         {
-            this.config.baseid = "multibutton-" + Math.floor((Math.random() * 10) + 1) + "-";
+            this.config.baseid = "multibutton-" + Math.floor((Math.random() * 100) + 1) + "-";
         }
 
         // Render the card
