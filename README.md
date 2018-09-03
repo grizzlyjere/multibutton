@@ -3,20 +3,24 @@ A custom Home Assistant Lovelace control for displaying multiple buttons in a ca
 
 Each button will call a home assistant service with the specified data.  If the entity matches the state of the button, it will be highlighted.  It's intended to be very flexible, so configuration is rather advanced.
 
+![multiswitch Example](https://github.com/grizzlyjere/multiswitch/blob/master/Example-Lights.png)
+
 ## Instructions
 1. In the `config/www` directory of Home Assistant, create a directory called `multistate`
 2. Save [multistate.js](https://github.com/grizzlyjere/multiswitch/raw/master/multistate.js) in this new directory
 3. In your `ui-lovelace.yaml` file, add this file to the resources section.  It should look like this:
-`
+```
 resources:
   - url: /local/multistate/multistate.js
     type: js
-`
+```
 4. Add the card to a view.  The card type will be `custom:multi-button-switch`.  See the examples section below for sample configurations
 
 ## Examples
 
 ### Light Dim States
+![multiswitch Example](https://github.com/grizzlyjere/multiswitch/blob/master/Example-Lights.png)
+
 In this example, we want to show buttons for Full, Medium, Low, and Off light brightness states
 
 ```
