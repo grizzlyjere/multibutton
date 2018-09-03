@@ -30,7 +30,7 @@ In this example, we want to show buttons for Full, Medium, Low, and Off light br
   baseid: customlivingroom
   serviceDomain: light
   brightnessTolerance: 70
-  options:
+  buttons:
   - name: "Full"
     service: "turn_on"
     serviceData:         
@@ -56,10 +56,10 @@ In this example, we want to show buttons for Full, Medium, Low, and Off light br
 |baseid|string|n/a|None|(Required) Text to serve as the based for the HTML id of the component|
 |serviceDomain|string|(Any Home Assistant Service Domain)|None|(Required) Service domain to call (e.g. light, scene, fan, etc)|
 |brightnessTolerance|number|n/a|0|(Optional) Delta from the target brightness to be considered a match.  I have some ZWave lights that don't report their final brightness for some time.  This allows the current state to be highlighted if the value is close, but not exactly what you've specified|
-|options|object|n/a|None|(Required) See below for the structure of each option|
+|buttons|object|n/a|None|(Required) See below for the structure of each option|
 
-## Option Values / Definining Buttons
-Each option will be rendered as a button
+## Button Values / Definining Buttons
+Each item in the buttons section will be rendered as an on-screen button
 
 |Name|Type|Supported Values|Default|Description|
 |----|----|-------|-------|-----------|
