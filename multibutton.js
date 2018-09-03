@@ -93,7 +93,7 @@ class MultiButtonSwitch extends HTMLElement {
                             }
                         }
                     }
-                    console.log("isMatch: " + isMatch);
+                    
                     if (isMatch) {
                         evaluateElement.classList.remove("multistate-button-inactive");
                         evaluateElement.classList.add("multistate-button-active");
@@ -157,6 +157,11 @@ class MultiButtonSwitch extends HTMLElement {
         // Set default values
         if (this.config.brightnessTolerance == null) {
             this.config.brightnessTolerance = 0;
+        }
+
+        if(this.config.baseid == null)
+        {
+            this.config.baseid = "multibutton-" + Math.floor((Math.random() * 10) + 1) + "-";
         }
 
         // Render the card
