@@ -1,6 +1,4 @@
-class MultiStateLight extends HTMLElement {
-
-
+class MultiButtonSwitch extends HTMLElement {
      constructor() {
           super();
           this.attachShadow({
@@ -294,4 +292,4 @@ function loadJavascript(url) {
      document.head.appendChild(script);
 }
 
-customElements.define('multistate', MultiStateLight);
+customElements.define('multi-button-switch', MultiButtonSwitch);
