@@ -1,13 +1,13 @@
-# multiswitch
+# multibutton
 A custom Home Assistant Lovelace control for displaying multiple buttons in a card (such as various light brightness, fan speeds, or scenes).
 
 Each button will call a home assistant service with the specified data.  If the entity matches the state of the button, it will be highlighted.  It's intended to be very flexible, so configuration is rather advanced.
 
-![multiswitch Example](https://github.com/grizzlyjere/multiswitch/blob/master/Example-Lights.png)
+![multiswitch Example](https://github.com/grizzlyjere/multibutton/blob/master/Example-Lights.png)
 
 ## Instructions
 1. In the `config/www` directory of Home Assistant, create a directory called `multibutton`
-2. Save [multibutton.js](https://github.com/grizzlyjere/multiswitch/raw/master/multibutton.js) in this new directory
+2. Save [multibutton.js](https://github.com/grizzlyjere/multibutton/raw/master/multibutton.js) in this new directory
 3. In your `ui-lovelace.yaml` file, add this file to the resources section.  It should look like this:
 ```
 resources:
@@ -19,7 +19,7 @@ resources:
 ## Examples
 
 ### Light Dim States
-![multibutton Example](https://github.com/grizzlyjere/multiswitch/blob/master/Example-Lights.png)
+![multibutton Example](https://github.com/grizzlyjere/multibutton/blob/master/Example-Lights.png)
 
 In this example, we want to show buttons for Full, Medium, Low, and Off light brightness states
 
@@ -66,3 +66,10 @@ Each item in the buttons section will be rendered as an on-screen button
 |Name|string|n/a|None|(Required) Button label|
 |service|string|(Any Home Assistant Service)|n/a|(Required) Service to call in the service domain specified previously.  Typically `turn_on` or `turn_off`|
 |serviceData|object|n/a|None|(Optional) Any values specified will be included in the service call (such as fan speed, brightness, etc)
+
+## TODO
+* Generate html ID programatically
+* Test and add examples for other service types (such as fan control)
+* Improved theme support
+* Ability to adjust styling from YAML
+* Code optimizations
